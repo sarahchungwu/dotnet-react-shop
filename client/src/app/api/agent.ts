@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { toast } from 'react-toastify'
-import { router } from '../router/Router'
+import { router } from '../router/Routes'
 
 axios.defaults.baseURL = 'http://localhost:5000/api/'
 axios.defaults.withCredentials = true
