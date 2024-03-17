@@ -18,6 +18,7 @@ import { addBasketItemAsync } from '../basket/basketSlice'
 interface Props {
   product: Product
 }
+
 export const ProductCard = ({ product }: Props) => {
   const { status } = useAppSelector((state) => state.basket)
   const dispatch = useAppDispatch()
