@@ -3,9 +3,18 @@ import {
   createEntityAdapter,
   createSlice,
 } from '@reduxjs/toolkit'
-import { Product } from '../../app/models/product'
+import { Product, ProductParams } from '../../app/models/product'
 import agent from '../../app/api/agent'
 import { RootState } from '../../app/store/configureStore'
+
+interface CatalogState {
+  productsLoaded: boolean
+  filtersLoaded: boolean
+  status: string
+  brands: string[]
+  types: string[]
+  productParams: ProductParams
+}
 
 const productsAdapter = createEntityAdapter<Product>()
 export const fetchProductsAsync = createAsyncThunk<Product[]>(
@@ -41,16 +50,33 @@ export const fetchFilters = createAsyncThunk(
   }
 )
 
+function initParams() {
+  return {
+    pageNumber: 1,
+    pageSize: 6,
+    orderBy: 'name',
+  }
+}
+
 export const catalogSlice = createSlice({
   name: 'catalog',
-  initialState: productsAdapter.getInitialState({
+  initialState: productsAdapter.getInitialState<CatalogState>({
     productsLoaded: false,
     filtersLoaded: false,
     status: 'idle',
     brands: [],
     types: [],
+    productParams: initParams(),
   }),
-  reducers: {},
+  reducers: {
+    setProductParams: (state, action) => {
+      state.productsLoaded = false
+      state.productParams = { ...state.productParams, ...action.payload }
+    },
+    resetProductParams: (state) => {
+      state.productParams = initParams()
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchProductsAsync.pending, (state) => {
       state.status = 'pendingFetchProducts'
@@ -95,3 +121,5 @@ export const catalogSlice = createSlice({
 export const productSelectors = productsAdapter.getSelectors(
   (state: RootState) => state.catalog
 )
+
+export const { setProductParams, resetProductParams } = catalogSlice.actions
